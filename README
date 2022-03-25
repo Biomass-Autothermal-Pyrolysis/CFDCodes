@@ -1,0 +1,224 @@
+CFD codes based on OpenFOAM developed as part of the project:
+
+"An Open-Source Framework for the Computational Analysis and Design of 
+Autothermal Chemical Processes"
+
+Prepared by:
+
+- Barlev R. Nagawkar, Graduate Student,
+  Department of Mechanical Engineering, Iowa State University.
+
+- Alberto Passalacqua, Associate Professor, 
+  Department of Mechanical Engineering, Iowa State University.
+
+Acknowledgment
+--------------
+
+This material is based upon work supported by the U.S. Department of Energy’s 
+Office of Energy Efficiency and Renewable Energy (EERE) under the Advanced 
+Manufacturing Office (AMO), Emerging Research Initiative Award Number 
+DE-EE0008326.
+
+Disclaimer
+----------
+
+This software was prepared as an account of work sponsored by an agency of the 
+United States Government. Neither the United States Government nor any agency 
+thereof, nor any of its employees, makes any warranty, express or implied, or 
+assumes any legal liability or responsibility for the accuracy, completeness, 
+or usefulness of any information, apparatus, product, or process disclosed, 
+or represents that its use would not infringe privately owned rights. 
+Reference herein to any specific commercial product, process, or service by 
+trade name, trademark, manufacturer, or otherwise does not necessarily 
+constitute or imply its endorsement, recommendation, or favoring by the 
+United States Government or any agency thereof.  The views and opinions of 
+authors expressed herein do not necessarily state or reflect those of the 
+United States Government or any agency thereof.
+
+
+Instructions
+------------
+
+Instructions on installing OpenFOAM and using the chemistry solver chemFoam and 
+multiphase CFD solver reactingMultiphaseEulerFoam.
+
+Installation on Linux workstation:
+
+1) Create a directory “OpenFOAM” on your home folder in which the OpenFOAM-dev 
+and ThirdParty-dev directories will be contained. Open a terminal and type:
+
+    mkdir OpenFOAM
+    cd OpenFOAM
+
+2) Source the OpenFOAM-bp/etc/bashrc file by adding the path in the .bashrc file. 
+Add following line:
+
+    source /home/OpenFOAM/OpenFOAM-bp/etc/bashrc
+
+3) Check the compilers and system openmpi your computer is using. 
+The default in the OpenFOAM code provided used GCC compiler and a SYSTEMOPENMPI. 
+If you are using the Intel compilers you will need to change this. 
+Follow steps 4 and 5 to make this change.
+
+4) Go into your etc folder and copy the file "prefs.sh" if it's not there.
+
+    cd OpenFOAM-bp
+    cp etc/config.sh/example/prefs.sh etc
+
+5) In this file you will find a bunch of commented lines. 
+Uncomment and use the Icc compiler and INTELMPI openmpi. 
+You should have then at the bottom:
+
+    ## Specify OpenFOAM ThirdParty compiler
+    ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #WM_COMPILER_TYPE=ThirdParty
+            
+    ## Specify compiler type
+    ## ~~~~~~~~~~~~~~~~~~~~~
+    export WM_COMPILER=Icc
+            
+    ## Specify system openmpi
+    ## ~~~~~~~~~~~~~~~~~~~~~~
+    export WM_MPLIB=INTELMPI
+
+
+6) Go to OpenFOAM-bp, source .bashrc and make all. Instruction, type in terminal:
+
+    source ~/.bashrc
+    ./Allwmake -j
+
+7) Make in Thirdparty as well (If you want you can do clean and then make):
+
+    ./Allclean
+    ./Allwmake
+
+8) Just to make sure everything was installed properly, go back to OpenFOAM-dev 
+and do an Allwmake to log. Instruction:
+
+./Allwmake >& log&
+
+This will run quickly since everything was compiled already. Check the log file 
+for any errors. There may be an error for paraview which the next step should 
+fix. 
+ 
+9) Paraview can be installed for postprocessing the results obtained from the 
+CFD simulations. 
+To install paraview, open the ThirdParty directory and type the following 
+command:
+
+    ./makeParaView
+
+Multiphase CFD simulations
+--------------------------
+
+General Description of the multiphase CFD cases
+
+Each CFD case has three folders named, 0.org, constant, and system. The 0.org 
+folder contains he files where the initial and boundary conditions are specified 
+for the problem. The system directory contains files for the execution of the 
+solver. The constant directory is where the phases and their properties are 
+defined. The reactions are defined in this directory as well. Each phase can be 
+made up multiple species. The thermodynamic properties of each species of each 
+phase are specified in the constant directory. For cold flow simulations, only 
+phases are specified. 
+
+Running a cold-flow simulation:
+
+The solver for these simulations is located under:
+    home/OpenFOAM/OpenFOAM-ktgf/applications/solvers/multiphase/reactingEulerFoam
+
+Specifically, the reactingEulerFoam/reactingMultiphaseEulerFoam solver is used 
+for defining more than two phases
+
+Two tutorial files are provided for the CFD simulations of bidisperse cold flow 
+in a fluidized bed. 
+These are a) 3D simulations of biomass and sand mixing in the fluidized bed, 
+and b) the segregation of sand and glass beads in a fluidized bed. 
+The tutorial for running a bi-disperse simulation of a fluidized can be found 
+here:
+
+    home/OpenFOAM/OpenFOAM-ktgf/tutorials/multiphase/reactingMultliphaseEulerFoam/laminar/mixingFluidizedBed/biomassPyrolysisReactor3D
+
+    home/OpenFOAM/OpenFOAM-ktgf/tutorials/multiphase/reactingMultliphaseEulerFoam/laminar/mixingFluidizedBed/segregation2D
+
+To run the simulations navigate to the location with Linux terminal and execute the following:
+
+    cp -r 0.org 0
+    blockMesh
+    setFields
+    reactingMultiphaseEulerFoam >& log&
+
+To run in parallel (say 8 processors):
+
+    cp -r 0.org 0
+    blockMesh
+    setFields
+    decomposePar
+    mpirun -n 8 reactingMultiphaseEulerFoam -parallel >& log&
+
+Note that these will run the simulations in the background and write the output 
+to the log file. To view this type: 
+
+    tail -f log
+
+Running a biomass pyrolysis simulation:
+
+The solver for these simulations is located under:
+home/OpenFOAM/OpenFOAM-bp/applications/solvers/multiphase/reactingEulerFoam
+
+Specifically, the reactingEulerFoam/reactingMultiphaseEulerFoam solver is used 
+for defining more than two phases
+
+Running the simulations for the reactions simulations of biomass are exactly the 
+same as for the cold flow simulations. 
+
+A tutorial case with the Ranzi devolatilization and char combustion is provided, 
+and can be found here:
+
+    home/OpenFOAM/OpenFOAM-bp/tutorials/multiphase/reactingMultliphaseEulerFoam/laminar/biomassPyrolysis/ranziDevolCharCombustion
+
+
+Zero dimensional chemsitry solver
+---------------------------------
+
+General description of the chemistry solver
+
+The chemistry solver chemFoam like the mCFD solvers, also have a 0, constant, 
+and a system directory. However, the initial compositions of the species are 
+defined from the constant directory through the file called initialConditions. 
+
+
+Running a biomass pyrolysis chemistry solver:
+
+The solver for these simulations is in:
+
+    home/OpenFOAM/OpenFOAM-bp/applications/solvers/combustion/chemFoam
+
+Tutorials for the chemistry solver chemFoam can be found here:
+
+    home/OpenFOAM/OpenFOAM-bp/tutorials/combustion/chemFoam/biomassPyrolysis
+
+Several tutorials can be found here. There are including:
+
+    1) Only the Ranzi devolatilization mechanism 
+    2) Char combustion mechanism along with the Ranzi devolatilization
+    3) The full mechanism with devolatilization, char combustion and CRECK 
+       mechanism
+    4) Only the CRECK mechanism 
+
+To run these simulations, in the terminal use the following command:
+
+    chemFoam
+
+The chemistry solver creates an chemFoam.out file that prints out the mass 
+fraction of each species in time. The order of the species is as per the order 
+defined in the constant/thermo file, starting with the column number 6. The 
+evolution of the species can be plotted using gnuplot through the terminal. 
+
+For example (assuming you have this installed), in the terminal type:
+
+    gnuplot
+    plot ‘chemFoam.out’ u 1:6 with lines title “mySpeice 1” lt -1
+
+This will plot the mass fraction of your first species (column 6) in y-axis vs 
+time (column 1) in x-axis
