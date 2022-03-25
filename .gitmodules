@@ -1,0 +1,12 @@
+[submodule "OpenFOAM-ktgf/OpenFOAM-ktgf"]
+	path = OpenFOAM-ktgf/OpenFOAM-ktgf
+	url = git@github.com:Biomass-Autothermal-Pyrolysis/OpenFOAM-ktgf.git
+[submodule "OpenFOAM-ktgf/ThirdParty-ktgf"]
+	path = OpenFOAM-ktgf/ThirdParty-ktgf
+	url = git@github.com:Biomass-Autothermal-Pyrolysis/ThirdParty-ktgf.git
+[submodule "OpenFOAM-bp/OpenFOAM-bp"]
+	path = OpenFOAM-bp/OpenFOAM-bp
+	url = git@github.com:Biomass-Autothermal-Pyrolysis/OpenFOAM-bp.git
+[submodule "OpenFOAM-bp/ThirdParty-bp"]
+	path = OpenFOAM-bp/ThirdParty-bp
+	url = git@github.com:Biomass-Autothermal-Pyrolysis/ThirdParty-bp.git
